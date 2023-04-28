@@ -452,8 +452,12 @@ req = HTTP.Request("GET", "/json", [], "{\"message\":[null,1.0]}")
 @test isnothing(json(req, allow_inf = false)["message"][1])
 
 #request with custom struct and struct
-r = HTTP.Request("GET", """/struct/{"name": "jim", "age": NaN}""")
-# @test json(r, rank, allow_inf = true) == Student("jim", NaN)
+req = HTTP.Request("GET","/", [],"""{"title": "viscount", "power": NaN}""")
+myjson = json(req, rank, allow_inf = true)
+@test isnan(myjson.id)
+req = HTTP.Request("GET","/", [],"""{"title": "viscount", "power": 9001}""")
+myjson = json(req, rank, allow_inf = false)
+@test myjsonid == 9001
 
 # float 
 r = internalrequest(HTTP.Request("GET", "/float/3.5"))
