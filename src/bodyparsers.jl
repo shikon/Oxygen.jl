@@ -57,6 +57,16 @@ function json(req::HTTP.Request; kwargs...)
     return eof(body) ? nothing : JSON3.read(body; kwargs...)    
 end
 
+"""
+    json(request::HTTP.Request, classtype; keyword_arguments...)
+
+Read the body of a HTTP.Request as JSON with additional arguments for the read/serializer with a custom struct.
+"""
+function json(req::HTTP.Request, classtype; kwargs...)
+    body = IOBuffer(HTTP.payload(req))
+    return eof(body) ? nothing : JSON3.read(body, classtype; kwargs...)    
+end
+
 
 ### Helper functions used to parse the body of an HTTP.Response object
 

@@ -6,7 +6,7 @@ using StructTypes
 using Sockets
 using Dates 
 
-include("crontests.jl")
+# include("crontests.jl")
 
 include("../src/Oxygen.jl")
 using .Oxygen
@@ -19,6 +19,16 @@ end
 struct Book
     name::String
     author::String
+end
+
+struct Student 
+    name  :: String 
+    age   :: Int8
+end
+
+struct rank
+    title  :: String 
+    id   :: Float64
 end
 
 localhost = "http://127.0.0.1:8080"
@@ -165,13 +175,7 @@ end
     return "delete"
 end 
 
-
-
 @enum Fruit apple=1 orange=2 kiwi=3
-struct Student 
-  name  :: String 
-  age   :: Int8
-end
 
 StructTypes.StructType(::Type{Student}) = StructTypes.Struct()
 StructTypes.StructType(::Type{Complex{Float64}}) = StructTypes.Struct()
@@ -304,7 +308,7 @@ emptysubpath = router("/emptysubpath", tags=["empty"])
     return "emptysubpath"
 end
 
-# added another request hanlder for post requests on the same route
+# added another request handler for post requests on the same route
 @post emptysubpath("") function(req)
     return "emptysubpath - post"
 end
@@ -435,7 +439,7 @@ r = internalrequest(HTTP.Request("GET", """/struct/{"aged": 20}"""))
 r = internalrequest(HTTP.Request("GET", """/struct/{"aged": 20}"""))
 @test r.status == 500
 
-#struct request tests
+#request tests with additional arguments
 
 req = HTTP.Request("GET", "/json", [], "{\"message\":[NaN,1.0]}")
 @test isnan(json(req, allow_inf = true)["message"][1])
@@ -446,6 +450,10 @@ req = HTTP.Request("GET", "/json", [], "{\"message\":[Inf,1.0]}")
 
 req = HTTP.Request("GET", "/json", [], "{\"message\":[null,1.0]}")
 @test isnothing(json(req, allow_inf = false)["message"][1])
+
+#request with custom struct and struct
+r = HTTP.Request("GET", """/struct/{"name": "jim", "age": NaN}""")
+# @test json(r, rank, allow_inf = true) == Student("jim", NaN)
 
 # float 
 r = internalrequest(HTTP.Request("GET", "/float/3.5"))
